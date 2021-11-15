@@ -1,14 +1,19 @@
 //SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
 
-contract VolcanoCoin {
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract VolcanoCoin is ERC20, Ownable {
     
-    mapping(address => uint256) private _balances;
-    mapping(address => Payment[]) private _payments;
+    constructor() ERC20("VolcanoCoin", "VLCC") {
+        _mint(msg.sender, 10000);
+    }
     
-    uint256 private _totalSupply = 10000;
-    address owner;
+    mapping(address => Payment[]) public _payments;
     
     struct Payment {
+        address paymentSender;
         address paymentRecipient;
         uint paymentAmount;
     }
@@ -16,49 +21,29 @@ contract VolcanoCoin {
     event SupplyIncreased(uint _newSupply);
     event TransactionSuccess(uint transactionAmount, address transactionAddress);
     
-    constructor(){
-        owner = msg.sender;
-        _balances[owner] = _totalSupply;
-    }
-    
-    modifier onlyOwner {
-        if (msg.sender == owner) {
-            _;
-        }
+    function transfer(address recipient, uint amount) public override returns (bool) {
+        recordPayment(msg.sender, recipient, amount);
+        super.transfer(recipient, amount);
+        return true;
     }
     
     function getPayments (address account) public view virtual returns (Payment[] memory) {
         return _payments[account];
     }
     
-    function balanceOf(address account) public view virtual returns (uint256) {
-        return _balances[account];
-    }
-    
-    function getSupply() public view returns (uint) {
-        return _totalSupply;
+    function recordPayment(address _sender, address _recipient, uint _amount) private returns (bool) {
+        _payments[msg.sender].push(
+                Payment({
+                    paymentSender: _sender,
+                    paymentRecipient: _recipient,
+                    paymentAmount: _amount
+            }));
+        return true;
     }
     
     function increaseSupply() public onlyOwner {
-        _totalSupply += 1000;
-        _balances[owner] = _totalSupply;
-        emit SupplyIncreased(_totalSupply);
+        _mint(msg.sender, 1000);
+        emit SupplyIncreased(totalSupply());
     }
     
-    function transfer(address recipient, uint256 amount) public virtual returns (bool) {
-        
-        if (amount <= _balances[msg.sender]){
-            _balances[msg.sender] = _balances[msg.sender] -= amount;
-            _balances[recipient] = _balances[recipient] += amount;
-            _payments[msg.sender].push(
-                Payment({
-                paymentRecipient: recipient,
-                paymentAmount: amount
-            }));
-            emit TransactionSuccess(amount, recipient);
-            return true;
-        } else {
-            return false;
-        }
-    }
 }
