@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+       <script src="ipfsclient.js"></script>
+       <style>
+       .hide {
+              position: absolute;
+              top: -1px;
+              left: -1px;
+              width: 1px;
+              height: 1px;
+       }
+       </style>
+       <h1>Welcome to your IPFS gateway</h1>
+       <br />
+       <h3>Add File</h3>
+       <p>Enter text you would like to save to IPFS into this box:</p>
+
+       <!-- <form id='textForm'> -->
+       <input id='uploadTextField' style="height: 100px; width: 600px"></input>
+       <br />
+       <input type='button' onclick='AddText()' value='Add text to IPFS'>
+       <!-- </form> -->
+       <p>Browse to image you would like to upload:</p>
+       <input type="file" id="uploadImageField" accept="image/png, image/jpeg">
+       <br />
+       <br />
+       <button onclick='AddImage()' id='uploadImageButton'>Add Image to IPFS</button>
+       <p>Output from the IPFS node:</p>
+       <textarea id='returnedCID' disabled placeholder="Awaiting message from IPFS node..."
+              style="height: 100px; width: 600px; border-color: #99a0aa"></textarea>
+       <hr>
+       <h3>Read File</h3>
+       <input id='searchCID' placeholder="Put your IPFS CID here..." style="width: 600px" >
+       <input onclick='retrieveData()' type='button' value='Read from IPFS'>
+       <div id='responseContainerText' style="position: relative; height: auto; visibility: hidden; border:solid; box-shadow: 0 0 0 8px #f7f7f7; border-radius:3px;">
+       <p id='responseHeaderText'>Response: </p>
+       <div id='responseContainerImage' style="visibility: hidden; width: auto; position: relative; height: auto;  border:solid; box-shadow: 0 0 0 8px #f7f7f7; border-radius:3px;">
+       <p id='responseHeaderImage'>Response: </p>
+       <img id='readImage' src=''>
+       </div>
+       
+       
+       
